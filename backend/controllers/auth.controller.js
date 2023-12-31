@@ -65,7 +65,9 @@ export const refreshToken = async (req, res, next) => {
     const getUser = await findUser(checkToken.userId);
     const token = await getUser.createAccessToken();
 
-    res.status(StatusCodes.OK).json({ token, user: getUser.publicResponse() });
+    res
+      .status(StatusCodes.OK)
+      .json({ access_token: token, user: getUser.publicResponse() });
   } catch (error) {
     next(error);
   }

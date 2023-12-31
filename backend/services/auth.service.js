@@ -12,7 +12,11 @@ export const createUser = async (userData) => {
     : !validator.isLength(username, { min: 3, max: 10 })
     ? (errors.username = 'username length must be between 3 to 10 characters')
     : null;
-  !email ? (errors.email = 'email is required') : null;
+  !email
+    ? (errors.email = 'email is required')
+    : !validator.isEmail(email)
+    ? (errors.email = 'Please Enter Valid Email')
+    : null;
   !password
     ? (errors.password = 'password is required')
     : !validator.isLength(password, { min: 6, max: 128 })

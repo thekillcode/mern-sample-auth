@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import logger from './logger.js';
-import fs from 'fs';
 export const sign = async (payload, expiresIn, secret) => {
   return new Promise((resolve, reject) => {
     jwt.sign(payload, secret, { expiresIn: expiresIn }, (error, token) => {
