@@ -29,8 +29,8 @@ class App {
     this.app = express();
     this.server = https.createServer(
       {
-        key: fs.readFileSync('../configs/create-ca-key.pem'),
-        cert: fs.readFileSync('../configs/create-ca.pem'),
+        key: fs.readFileSync('configs/localhost+2-key.pem'),
+        cert: fs.readFileSync('configs/localhost+2.pem'),
       },
       this.app
     );

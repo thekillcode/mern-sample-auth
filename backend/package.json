@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "seeder": "cross-env NODE_ENV=development node database/seeders/seeder.js",
+    "genssl": "node configs/certGen.js",
+    "build": "cross-env NODE_ENV=production node server.js",
     "start": "cross-env NODE_ENV=production node server.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js"
   },
@@ -20,13 +21,9 @@
     "express": "^4.18.2",
     "express-fileupload": "^1.4.3",
     "express-mongo-sanitize": "^2.2.0",
-    "express-session": "^1.17.3",
     "helmet": "^7.1.0",
-    "http-errors": "^2.0.0",
-    "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.3",
-    "passport": "^0.7.0",
     "trim-request": "^1.0.6",
     "validator": "^13.11.0",
     "winston": "^3.11.0"
