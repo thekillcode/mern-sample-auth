@@ -1,12 +1,13 @@
 import express from 'express';
 import auth from '../middlewares/auth.js';
-import { StatusCodes, ReasonPhrases } from 'http-status-codes';
+import { StatusCodes } from '../errors/ApiError.js';
+
 const mainRouter = new express.Router();
 
 // Add routes
 mainRouter.get('/', (req, res) => {
   return res.json({
-    message: 'Welcome to Api Server' + process.env.MONGO_DATABASE,
+    message: 'Welcome to Api Server',
   });
 });
 

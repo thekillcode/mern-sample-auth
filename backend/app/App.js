@@ -1,4 +1,5 @@
-import http from 'http';
+import https from 'https';
+import fs from 'fs';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -9,7 +10,10 @@ import fileUpload from 'express-fileupload';
 import dotenv from 'dotenv';
 import routes from '../routes/routes.js';
 import logger from '../utils/logger.js';
-import { routeNotFoundMiddleware } from '../middlewares/middleware.js';
+import {
+  routeNotFoundMiddleware,
+  defaultErrorHandler,
+} from '../middlewares/middleware.js';
 
 class App {
   constructor({ port }) {
@@ -23,7 +27,13 @@ class App {
   }
   serverInit() {
     this.app = express();
-    this.server = http.createServer(this.app);
+    this.server = https.createServer(
+      {
+        key: fs.readFileSync('../configs/create-ca-key.pem'),
+        cert: fs.readFileSync('../configs/create-ca.pem'),
+      },
+      this.app
+    );
   }
   loadDevPlugins() {}
   loadPlugins() {
@@ -40,15 +50,7 @@ class App {
   }
   loadExceptionMiddlewares() {
     this.app.use(routeNotFoundMiddleware);
-    this.app.use(async (err, req, res, next) => {
-      res.status(err.status || 500);
-      return res.json({
-        error: {
-          status: err.status || 500,
-          message: err.message,
-        },
-      });
-    });
+    this.app.use(defaultErrorHandler);
   }
   startServer() {
     this.server.listen(this.PORT, () => {

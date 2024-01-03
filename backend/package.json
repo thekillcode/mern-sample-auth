@@ -5,6 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "seeder": "cross-env NODE_ENV=development node database/seeders/seeder.js",
     "start": "cross-env NODE_ENV=production node server.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js"
   },
@@ -29,5 +30,8 @@
     "trim-request": "^1.0.6",
     "validator": "^13.11.0",
     "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "mkcert": "^3.2.0"
   }
 }

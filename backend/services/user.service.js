@@ -1,7 +1,8 @@
+import ApiError, { StatusCodes } from '../errors/ApiError.js';
 import User from '../models/User.js';
-import httpError from 'http-errors';
 export const findUser = async (userId) => {
   const user = await User.findById(userId);
-  if (!user) throw httpError.BadRequest('Invalid User Request');
+  if (!user)
+    throw new ApiError('Invalid User Request', StatusCodes.BAD_REQUEST);
   return user;
 };

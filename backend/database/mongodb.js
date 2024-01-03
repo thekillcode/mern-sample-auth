@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import logger from '../utils/logger.js';
 
 const mongodbConnect = () => {
-  let a = mongoose.connect(
+  mongoose.connect(
     `${process.env.MONGO_ADDRESS}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`
   );
 };
