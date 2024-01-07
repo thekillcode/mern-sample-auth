@@ -1,6 +1,7 @@
 import validator from 'validator';
 import User from '../models/User.js';
 import ApiError, { ReasonPhrases, StatusCodes } from '../errors/ApiError.js';
+import bcrypt from 'bcryptjs';
 
 /**
  * The function `createUser` is an asynchronous function that takes in user data and creates a new user
@@ -85,4 +86,9 @@ export const loginUser = async (loginData) => {
     throw new ApiError('Invalid Credientials', StatusCodes.UNAUTHORIZED);
 
   return loginUser;
+};
+
+export const bcryptPasswod = async (passwod) => {
+  const salt = await bcrypt.genSalt(12);
+  return await bcrypt.hash(passwod, salt);
 };

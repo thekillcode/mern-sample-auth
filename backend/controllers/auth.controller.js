@@ -1,7 +1,22 @@
-import { createUser, loginUser } from '../services/auth.service.js';
+import fs from 'fs';
+import validator from 'validator';
+import {
+  bcryptPasswod,
+  createUser,
+  loginUser,
+} from '../services/auth.service.js';
 import { verifyToken } from '../services/token.service.js';
-import { findUser } from '../services/user.service.js';
+import {
+  findUser,
+  findUserResetPasswordToken,
+} from '../services/user.service.js';
 import ApiError, { StatusCodes } from '../errors/ApiError.js';
+import { sendMail } from '../services/mail.service.js';
+import { renderEjsToHTMLStr } from '../utils/ejs.js';
+import ResetPasswordToken from '../models/ResetPasswordToken.js';
+import { generateString } from '../utils/str.js';
+import User from '../models/User.js';
+
 /**
  * The `register` function is an asynchronous function that handles the registration process by
  * creating a new user, generating access and refresh tokens, setting a refresh token cookie, and
@@ -89,7 +104,7 @@ export const login = async (req, res, next) => {
 export const logout = async (req, res, next) => {
   try {
     res.clearCookie('refreshToken', { path: '/api/v1/auth/refresh-token' });
-    res.json({
+    return res.json({
       message: 'Logged Out Successfully !',
     });
   } catch (error) {
@@ -124,6 +139,120 @@ export const refreshToken = async (req, res, next) => {
     res
       .status(StatusCodes.OK)
       .json({ access_token: token, user: getUser.publicResponse() });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * The `forgotPassword` function is an asynchronous function that handles the logic for sending a
+ * forgot password email to a user.
+ * @param req - The `req` parameter is the request object that contains information about the HTTP
+ * request made by the client. It includes properties such as the request headers, request body,
+ * request method, request URL, etc.
+ * @param res - The `res` parameter is the response object that is used to send the response back to
+ * the client. It contains methods and properties that allow you to control the response, such as
+ * setting the status code, headers, and sending the response body. In this code snippet, the `res`
+ * object is
+ * @param next - The `next` parameter is a function that is used to pass control to the next middleware
+ * function in the request-response cycle. It is typically used to handle errors or to move on to the
+ * next middleware function in the chain.
+ * @returns a JSON response with the following properties:
+ * - otp: The randomly generated OTP (One-Time Password)
+ * - status: The HTTP status code (200 OK)
+ * - envelope: The envelope information from the email sending process
+ */
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const template = fs.readFileSync(
+      'templates/emails/forgotPassword.email.template.ejs',
+      'utf-8'
+    );
+    const otp = Math.floor(Math.random() * (9000 - 1000) + 1000);
+    const bodyHtml = await renderEjsToHTMLStr(template, { otp: otp });
+    const info = await sendMail(
+      {
+        from: '"PAVF ADMIN 👻" <pavf@thekillcode.com>',
+        replyTo: 'no-reply@thekillcode.com', // sender address
+        to: `${email}`, // list of receivers
+        subject: 'Forgot Password', // Subject line
+        text: '', // plain text body
+        html: bodyHtml, // html body
+      },
+      'smtp'
+    );
+    return res.status(StatusCodes.OK).json({
+      otp: otp,
+      status: StatusCodes.OK,
+      envelope: info.envelope,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const confirmOtp = async (req, res, next) => {
+  try {
+    const { otp_success, email } = req.body;
+    const errors = {};
+    !otp_success || otp_success !== 'success'
+      ? (errors.otp_success = 'otp_success Field Is Required')
+      : null;
+    !email ? (errors.email = 'email Field Is Required') : null;
+
+    if (Object.keys(errors).length > 0) {
+      throw new ApiError(errors, StatusCodes.BAD_REQUEST);
+    }
+    const oldToken = await ResetPasswordToken.findOne({ email: email });
+    if (oldToken) {
+      await oldToken.deleteOne();
+    }
+    const newToken = generateString(64);
+    const newResetPasswordRequest = await new ResetPasswordToken({
+      email: email,
+      token: newToken,
+    }).save();
+    res.status(StatusCodes.CREATED).json({
+      reset_token: newResetPasswordRequest.token,
+      email: newResetPasswordRequest.email,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { reset_token, email, password, password_confirmation } = req.body;
+    const errors = {};
+    !reset_token
+      ? (errors.reset_token = 'Reset Token Field Is Required')
+      : null;
+    !email ? (errors.email = 'email Field Is Required') : null;
+    !password
+      ? (errors.password = 'password is required')
+      : !validator.isLength(password, { min: 6, max: 128 })
+      ? (errors.password = 'password length must be between 5 to 128 character')
+      : !validator.equals(password, password_confirmation)
+      ? (errors.password = 'password and confirm password mis-match')
+      : null;
+
+    if (Object.keys(errors).length > 0) {
+      throw new ApiError(errors, StatusCodes.BAD_REQUEST);
+    }
+    const getToken = await findUserResetPasswordToken(email, reset_token);
+    if (getToken) {
+      const hashNewPassword = await bcryptPasswod(password);
+      const updatedUser = await User.findOneAndUpdate(
+        { email: email },
+        { password: hashNewPassword }
+      );
+      await getToken.deleteOne();
+      res.status(StatusCodes.CREATED).json({
+        message: 'User Updated Successfully',
+        user: updatedUser.publicResponse(),
+      });
+    }
   } catch (error) {
     next(error);
   }

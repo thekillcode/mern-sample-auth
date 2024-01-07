@@ -1,4 +1,4 @@
-import mkcert from 'mkcert';
+import * as mkcert from 'mkcert';
 
 export const generateCA = async (options) => {
   const defaultOptions = {
@@ -15,6 +15,8 @@ export const generateCert = async (options, ca) => {
     ca: { key: ca.key, cert: ca.cert },
     domains: ['localhost'],
     validity: 365,
+    email: 'inventer@gmail.com',
+    organization: 'inventer lord',
   };
   return await mkcert.createCert({ ...defaultOptions, ...options });
 };

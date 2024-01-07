@@ -1,7 +1,4 @@
 import mongoose from 'mongoose';
-import validator from 'validator';
-import bcrypt from 'bcryptjs';
-import { generateToken } from '../services/token.service.js';
 
 const RoleSchema = new mongoose.Schema(
   {

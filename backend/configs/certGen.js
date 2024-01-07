@@ -1,8 +1,22 @@
 import fs from 'fs';
 import { generateCA, generateCert } from '../services/cert.service.js';
 
-const ca = await generateCA();
-const cert = await generateCert({}, ca);
+const ca = await generateCA({
+  organization: 'Haiderz Company',
+  countryCode: 'PK',
+  state: 'Punjab',
+  locality: 'Islamabad',
+  validity: 365,
+});
+const cert = await generateCert(
+  {
+    domains: ['localhost', '127.0.0.1', '::1'],
+    validity: 365,
+    email: 'inventer@gmail.com',
+    organization: 'inventer lord',
+  },
+  ca
+);
 // console.log(ca.key, ca.cert); // certificate info
 // console.log(`${cert.cert}${ca.cert}`);
 

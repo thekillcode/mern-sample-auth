@@ -56,6 +56,7 @@ UserSchema.pre('save', async function (next) {
     next(error);
   }
 });
+
 UserSchema.methods.createAccessToken = async function () {
   return await generateToken(
     { userId: this._id },
