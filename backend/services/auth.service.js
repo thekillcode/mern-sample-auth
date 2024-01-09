@@ -2,6 +2,7 @@ import validator from 'validator';
 import User from '../models/User.js';
 import ApiError, { ReasonPhrases, StatusCodes } from '../errors/ApiError.js';
 import bcrypt from 'bcryptjs';
+import Role from '../models/Role.js';
 
 /**
  * The function `createUser` is an asynchronous function that takes in user data and creates a new user
@@ -47,10 +48,12 @@ export const createUser = async (userData) => {
       throw new ApiError(errors, StatusCodes.BAD_REQUEST);
     }
   }
+  const userRole = await Role.findOne({ slug: 'user' });
   const newUser = await new User({
     username: username,
     email: email,
     password: password,
+    role: userRole._id,
   }).save();
 
   return newUser;

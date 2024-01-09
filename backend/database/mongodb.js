@@ -5,6 +5,10 @@ const mongodbConnect = () => {
   mongoose.connect(
     `${process.env.MONGO_ADDRESS}:${process.env.MONGO_PORT}/${process.env.MONGO_DATABASE}`
   );
+
+  // mongoose.connect(
+  //   `mongodb+srv://mern:Faroogh@mernauth.0fcldjo.mongodb.net/mern-auth?retryWrites=true&w=majority`
+  // );
 };
 
 mongoose.connection.on('error', (err) => {

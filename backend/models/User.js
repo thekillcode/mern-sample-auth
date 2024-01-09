@@ -38,6 +38,10 @@ const UserSchema = new mongoose.Schema(
       maxlength: 20,
       default: 'last Name',
     },
+    role: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Role',
+    },
   },
   {
     collection: 'users',

@@ -27,3 +27,5 @@ export const findUserResetPasswordToken = async (email, token) => {
   }
   return getToken;
 };
+
+export const updateUserData = (data, user_id) => {};

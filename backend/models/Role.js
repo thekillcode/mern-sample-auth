@@ -12,10 +12,10 @@ const RoleSchema = new mongoose.Schema(
       required: [true, 'Role Name Is Required'],
       unique: [true, 'Role Name Already Exist'],
     },
-    permissions: {
-      type: Array,
-      required: [true, 'At least One Permission Required'],
-    },
+    // permissions: {
+    //   type: Array,
+    //   required: [true, 'At least One Permission Required'],
+    // },
   },
   {
     collection: 'roles',
