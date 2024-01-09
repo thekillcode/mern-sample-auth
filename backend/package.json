@@ -8,7 +8,7 @@
     "genssl": "node configs/certGen.js development ",
     "build": "cross-env NODE_ENV=production node server.js",
     "start": "cross-env NODE_ENV=production node server.js",
-    "dev": "cross-env NODE_ENV=production nodemon server.js"
+    "dev": "cross-env NODE_ENV=development nodemon server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -24,6 +24,7 @@
     "express-mongo-sanitize": "^2.2.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "mailtrap": "^3.2.0",
     "mongoose": "^8.0.3",
     "nodemailer": "^6.9.8",
