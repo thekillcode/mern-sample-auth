@@ -22,7 +22,7 @@ const auth = async (req, res, next) => {
   const completeToken = bearerToken.split(' ');
   const tokenKey = completeToken[0];
   const tokenValue = completeToken[1];
-  if (tokenKey.toLowerCase() !== 'bearer' || !tokenValue)
+  if (tokenKey.toLowerCase() !== 'naqvi' || !tokenValue)
     return next(new ApiError('Invalid Token', StatusCodes.UNAUTHORIZED));
   jwt.verify(tokenValue, process.env.JWT_SECRET, (err, payload) => {
     if (err)

@@ -1,5 +1,5 @@
 import express from 'express';
-import { StatusCodes } from '../errors/ApiError.js';
+import { ReasonPhrases, StatusCodes } from '../errors/ApiError.js';
 import { roleSeeder, userSeeder } from '../database/seeders/seeder.js';
 
 const mainRouter = new express.Router();
@@ -28,10 +28,10 @@ mainRouter.get('/seeder', async (req, res) => {
         role: 'user',
       },
     ]);
-    return res.status(StatusCodes.CREATED).json({ UserData });
+    return res.status(StatusCodes.CREATED).json({ roleData, UserData });
   } else {
     return res.status(StatusCodes.UNAUTHORIZED).json({
-      message: 'Authenticated',
+      message: ReasonPhrases.UNAUTHORIZED,
     });
   }
 });
